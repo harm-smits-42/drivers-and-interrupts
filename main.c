@@ -65,7 +65,8 @@ static struct miscdevice misc_dev = {
 static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
 	t_keylogger_data *logs = (t_keylogger_data *)data;
-
+	
+	printk(KERN_WARN "HANDLER GOT CALLED\n");
 	return IRQ_HANDLED;
 }
 
