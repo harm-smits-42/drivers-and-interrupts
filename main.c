@@ -10,6 +10,7 @@
 #include <linux/errno.h>
 #include <linux/vmalloc.h>
 #include <linux/interrupt.h>
+#include <asm/io.h>
 
 MODULE_AUTHOR("hsmits & sel-melc");
 MODULE_DESCRIPTION("Keylogger");
