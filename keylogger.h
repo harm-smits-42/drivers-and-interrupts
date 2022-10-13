@@ -1,7 +1,9 @@
 #ifndef KEYLOGGER_H
 #define KEYLOGGER_H
 
-#define ASCII_UNDEFINED		'?'
+# define ASCII_UNDEFINED	'?'
+# define KEYNAME_LEN		16
+
 # define KEY(name, ascii)		{ #name, ascii, ascii }
 # define KEYU(name, ascii, upper)	{ #name, ascii, upper }
 # define KEY_SPECIAL(name)	{ name, ASCII_UNDEFINED, ASCII_UNDEFINED }
