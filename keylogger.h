@@ -17,6 +17,30 @@ struct key_info {
 	char	ascii_uppercase;
 };
 
+struct key_info multicode_to_key[SCANCODE_ARRAY_SIZE] = {
+
+	[0x00 ... SCANCODE_ARRAY_SIZE - 1] = KEY_NONE,
+
+	[0x48] = KEY_SPECIAL("Arrow Up"),
+	[0x4d] = KEY_SPECIAL("Arrow Right"),
+	[0x50] = KEY_SPECIAL("Arrow Down"),
+	[0x4b] = KEY_SPECIAL("Arrow Left"),
+
+	[0x53] = KEY_SPECIAL("Delete"),
+	[0x4f] = KEY_SPECIAL("End"),
+	[0x51] = KEY_SPECIAL("Page Down"),
+	[0x49] = KEY_SPECIAL("Page  Up"),
+	[0x47] = KEY_SPECIAL("Home"),
+	[0x52] = KEY_SPECIAL("Insert"),
+
+	[0x1c] = KEY_SPECIAL("Numpad Enter"),
+
+	[0x38] = KEY_SPECIAL("Right alt"),
+	[0x1d] = KEY_SPECIAL("Right Ctrl"),
+	[0x5d] = KEY_SPECIAL("Menu"),
+};
+
+
 struct key_info scancode_to_key[SCANCODE_ARRAY_SIZE] = {
 
 	[0x00 ... SCANCODE_ARRAY_SIZE - 1] = KEY_NONE,
