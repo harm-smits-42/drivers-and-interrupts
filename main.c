@@ -126,7 +126,7 @@ int generate_timestamp(char *out)
 {
 	struct timespec64 ts;
 	
-	ktime_get_ts64(&ts);
+	ktime_get_real_ts64(&ts);
 
 	if (sprintf(out, "%.2lld:%.2lld:%.2lld", (ts.tv_sec/3600) % 24, (ts.tv_sec/60) % 60, ts.tv_sec % 60) < 0)
 	{
