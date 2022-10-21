@@ -12,6 +12,7 @@
 #include <linux/interrupt.h>
 #include <linux/time.h>
 #include <linux/timekeeping.h>
+#include <linux/slab.h>
 #include <asm/io.h>
 #include "keylogger.h"
 
