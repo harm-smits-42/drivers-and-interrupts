@@ -153,7 +153,7 @@ static void __exit cleanup(void)
 t_entry_lst *add_entry(t_entry_lst **lst, char *entry)
 {
 	t_entry_lst *new;
-	t_entry_lst *curr = *lst;
+	t_entry_lst *curr;
 	char		*dup;
 	size_t		len_entry = strlen(entry);
 
@@ -168,6 +168,7 @@ t_entry_lst *add_entry(t_entry_lst **lst, char *entry)
 		*lst = new;
 	else
 	{
+		curr = *lst;
 		while (curr->next)
 			curr = curr->next;
 		curr->next = new;	
