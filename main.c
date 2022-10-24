@@ -33,7 +33,7 @@ static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff
 		cread += strlen(lst->entry);
 		lst = lst->next;
 	}
-	return ret;
+	return cread;
 }
 
 
