@@ -23,7 +23,7 @@ t_entry_lst *add_entry(t_entry_lst **lst, char *entry)
 
 void del_lst(t_entry_lst *lst)
 {
-	t_lst *next;
+	t_entry_lst *next;
 
 	if (!lst)
 		return;
