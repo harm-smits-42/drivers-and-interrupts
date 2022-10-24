@@ -27,13 +27,22 @@
 
 # define SCANCODE_ARRAY_SIZE 0xFF
 
-void		del_lst(t_entry_lst *lst);
-t_entry_lst	*add_entry(t_entry_lst **lst, char *entry);
+/*
+** LIST SECTION
+*/
 
-typedef struct	entry_lst {
+
+typedef struct	entry_lst {
 	char				*entry;
 	struct entry_lst	*next;
 }				t_entry_lst;
+
+void		del_lst(t_entry_lst *lst);
+t_entry_lst	*add_entry(t_entry_lst **lst, char *entry);
+
+/*
+** END LIST SECTION
+*/
 
 struct key_info {
 	char	name[KEYNAME_LEN];
