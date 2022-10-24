@@ -154,11 +154,15 @@ t_entry_lst *add_entry(t_entry_lst **lst, char *entry)
 {
 	t_entry_lst *new;
 	t_entry_lst *curr = *lst;
-	
-	if (!lst || !(new = kmalloc(sizeof(t_entry_lst), GFP_ATOMIC)))
+	char		*dup;
+	size_t		len_entry = strlen(entry);
+
+	if (!lst || !(new = kmalloc(sizeof(t_entry_lst), GFP_ATOMIC)) 
+			 || !(dup = kmalloc(len_entry + 1 , GFP_ATOMIC)))
 		return NULL;
 	
-	new->entry = entry;
+	strcpy(dup, entry);
+	new->entry = dup;
 	new->next = NULL;
 	if (!*lst)
 		*lst = new;
@@ -181,6 +185,7 @@ void del_lst(t_entry_lst *lst)
 	while (lst)
 	{
 		next = lst->next;
+		kfree(lst->entry);
 		kfree(lst);
 		lst = next;
 	}
