@@ -1,5 +1,5 @@
 obj-m += keylog.o
-keylog-objs += main.o lst.o
+keylog-y := main.o lst.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
