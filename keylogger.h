@@ -1,6 +1,22 @@
 #ifndef KEYLOGGER_H
 #define KEYLOGGER_H
 
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/string.h>
+#include <linux/device.h>
+#include <linux/usb.h>
+#include <linux/mod_devicetable.h>
+#include <linux/miscdevice.h>
+#include <linux/uaccess.h>
+#include <linux/errno.h>
+#include <linux/vmalloc.h>
+#include <linux/interrupt.h>
+#include <linux/time.h>
+#include <linux/timekeeping.h>
+#include <linux/slab.h>
+#include <asm/io.h>
+
 # define ASCII_UNDEFINED	'?'
 # define KEYNAME_LEN		16
 
@@ -10,6 +26,14 @@
 # define KEY_NONE	{ "Undefined", ASCII_UNDEFINED, ASCII_UNDEFINED }
 
 # define SCANCODE_ARRAY_SIZE 0xFF
+
+void		del_lst(t_entry_lst *lst);
+t_entry_lst	*add_entry(t_entry_lst **lst, char *entry);
+
+typedef struct	entry_lst {
+	char				*entry;
+	struct entry_lst	*next;
+}				t_entry_lst;
 
 struct key_info {
 	char	name[KEYNAME_LEN];
