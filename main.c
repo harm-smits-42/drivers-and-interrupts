@@ -157,10 +157,13 @@ t_entry_lst *add_entry(t_entry_lst **lst, char *entry)
 	char		*dup;
 	size_t		len_entry = strlen(entry);
 
-	if (!lst || !(new = kmalloc(sizeof(t_entry_lst), GFP_ATOMIC)) 
-			 || !(dup = kmalloc(len_entry + 1 , GFP_ATOMIC)))
+	if (!lst || !(new = kmalloc(sizeof(t_entry_lst), GFP_ATOMIC)))
 		return NULL;
-	
+	if (!(dup = kmalloc(len_entry + 1 , GFP_ATOMIC)))
+	{
+		kfree(new);
+		return NULL;
+	}
 	strcpy(dup, entry);
 	new->entry = dup;
 	new->next = NULL;
